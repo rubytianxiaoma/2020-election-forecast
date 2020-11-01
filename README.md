@@ -16,7 +16,7 @@ Outputs contain data that are modified from the input data, the report and suppo
 - survey.csv, modified from the Democracy Fund + UCLA Nationscape project.
 - cell_post.csv, modified from ACS data
 
-Scripts contain R scripts that take inputs and outputs and produce outputs. These are:
+Clean data code folder contains code that cleaning ACS 2018(Post-stratification data) and Nationscape survey(Individual survey data)
 
-- 01_data_cleaning.R
-- 02_data_preparation.R
+- clean_ACS2018_data.Rmd
+- clean_survey_data.Rmd
