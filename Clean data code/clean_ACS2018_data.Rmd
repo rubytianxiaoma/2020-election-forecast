@@ -18,7 +18,6 @@ raw_data <- labelled::to_factor(raw_data)
 
 
 ```{r,include=FALSE,echo=FALSE}
-
 # Keep variables that we're interested including education level, age, gender, race, Hispanic identity and regions. 
 names(raw_data)
 
