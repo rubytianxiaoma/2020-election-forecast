@@ -5,9 +5,10 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   bookdown::pdf_document2:
     latex_engine: xelatex
+    citation_package: natbib
   pdf_document: default
 abstract: |
- Thanks to the electoral college system, Republican Donald J. Trump won the presidential election in the year of 2016 and defeated Democrat candidate Hillary Clinton even though Hillary won the popular vote by a slim margin. However, as the difference between the popular approval rate of two candidates Joe Biden and Donald Trump increases and the constituencies are getting polarized, it is hard to tell whether or not Donald Trump will be re-elected when he has a relatively lower approval rate. Hence in our research, we used the multilevel regression with post stratification and found out that Biden will have a winning rate of 50.13% with a margin of error of 5% and Trump will lose the election by a very slim proportion about 0.26%. Such findings forecast the result of the 2020 US presidential election and furthermore tell the trending ideology of the general American people is going more left or progressive rather than conservative so that it will indirectly show the possible policies introduced by the US government in the near future.
+ Thanks to the electoral college system, Republican Donald J. Trump won the presidential election in the year of 2016 and defeated Democrat candidate Hillary Clinton even though Hillary won the popular vote by a slim margin. However, as the difference between the popular approval rate of two candidates Joe Biden and Donald Trump increases and the constituencies are getting polarized, it is hard to tell whether or not Donald Trump will be re-elected when he has a relatively lower approval rate. Hence in our research, we used the multilevel regression with post stratification and found out that Trump will have a winning rate of 49.87% so that Biden will win the election. Such findings forecast the result of the 2020 US presidential election and furthermore tell the trending ideology of the general American people is going more left or progressive rather than conservative so that it will indirectly show the possible policies introduced by the US government in the near future.
 
  **Keywords:** forecasting; US 2020 election; Trump; Biden; Multilevel Regression with post-stratification
 ---
@@ -22,10 +23,16 @@ library(readr)
 library(tidyverse)
 library(broom)
 library(lme4)
-
+# install.packages("kableExtra")
+# For dev version
+# install.packages("devtools")
+# devtools::install_github("haozhu233/kableExtra")
+library(kableExtra)
 survey <- read_csv("survey.csv")
 post <- read_csv("cells_post.csv")
 ```
+
+\newpage
 
 # Introduction
 For millions of Americans, November 3rd, 2020 will be an election day that is anything but similar to the ones before. In fact, for many Americans, election day has already happened—due to the global COVID-19 pandemic, an unprecedented number of voters have casted their votes through mail-in ballots or in the early-voting process. 
@@ -41,6 +48,7 @@ On the national popular vote, besides the general forecast, we also look into th
  
 Ultimately, regardless of our or others’ predictions, we will know the results on Nov 3rd (or more likely some days, even weeks later given the number of mail-in ballots this year). But we do hope our model and its results capture the current US political landscape and forecast the outcome as close as possible.
 
+\newpage
 
 # Data
 ## Individual-level survey data
@@ -60,7 +68,7 @@ A subset of the Nationscape dataset including demographics was selected and retr
 
 Key demographic divisions reflected in the contemporary American political landscape are what we are focusing on in our model. Table 1 shows the variables with descriptions used in the subdataset, the subset is cleaned by selecting wanted variables and reconstructing some variables to help build a model. Vote_2016 and Vote_2020 are two variables that only exist in the Nationscape surveym where Vote_2016 indicates who did the respondent vote for in 2016; Vote_2020 shows  who the respondent voted for if the election for president is held today. To be noticed, gender variables and five reconstructed variables are included in both individual-level survey data and Post-stratification data. Below is the explanation of 5 reconstructed variables.
 
-The education level variable, which is a binary variable containing two groups of respondents: people who have received some college education(1) and those who have not(0). This division has been an important voting predictor since at least the 2016 general election. The constructed age variable refers to seven age groups, without respondents under 18 years old and over 84 years old: “18”  refers to respondents aged from 18-24, and the rest age group contains respondents with 10 years age differences such as “25” represents respondents with age 25-34.  Regrouping age groups instead of every single age is more convenient when building a model. In addition, the hispanic identity variable is constructed into binary variables where 1 represents the respondent meets the condition, 0 otherwise. State variable here represents 51 states + DC in postal abbreviation(Details in Appendix 1). Race variable is regrouped into five groups: Native(american indian or alaska native), Black(black/african american/negro), White(White), API (Chinese, Japanese and other asian or Pacific Islander), and Other.
+The education level variable, which is a binary variable containing two groups of respondents: people who have received some college education(1) and those who have not(0). This division has been an important voting predictor since at least the 2016 general election. The constructed age variable refers to seven age groups, without respondents under 18 years old and over 84 years old: “18”  refers to respondents aged from 18-24, and the rest age group contains respondents with 10 years age differences such as “25” represents respondents with age 25-34.  Regrouping age groups instead of every single age is more convenient when building a model. In addition, the hispanic identity variable is constructed into binary variables where 1 represents the respondent meets the condition, 0 otherwise. State variable here represents 51 states + DC in postal abbreviation(Details in appendices 1). Race variable is regrouped into five groups: Native(american indian or alaska native), Black(black/african american/negro), White(White), API (Chinese, Japanese and other asian or Pacific Islander), and Other.
 
 ```{r,warning=FALSE, message=FALSE, echo=FALSE}
 #Data frame for original survey.csv
@@ -70,8 +78,8 @@ survey1 <-
 #Creating table for selected variables in the individual level survey.
 selected_table <- data.frame(var = c('state',  'vote_2016','vote_2020','gender','hisp','race','edu','age','reg','intention'), describ = c(' 51 states + DC in postal abbreviation',  'The candidate that the respondent voted for in 2016', 'If the election for president is hold now(2020), who will the respondent vote for', 'Gender of the respondent','If the respondent is hispanic, 1 = yes, 0= No','Race: Native, Black, White, API (“Asian or Pacific Islander"), Other','Education level, 1 = has received some college education, 0 otherwise','Age group:  “18” means 18-24, “25” means 25-34, and so on.','Registered to vote, 1 = yes,0 = no','Intention to vote in 2020 election'))
 colnames(selected_table) <- c("Variables", "Description")
-kable(selected_table, caption="Variables in Democracy Fund + UCLA Nationscape survey collected from June 25 - July 01, 2020")
-
+kable(selected_table, caption="Variables in Democracy Fund + UCLA Nationscape survey collected from June 25 - July 01, 2020") %>% 
+  kable_styling(latex_options = "hold_position")
 ```
 
 ```{r,warning=FALSE, message=FALSE, echo=FALSE}
@@ -81,7 +89,9 @@ count_age <- survey1 %>%
     summarise(count = n()) %>%
     mutate(proportion = prop.table(count))
 age_table <- data.frame(count_age)
-kable(age_table, caption="Age group proportion in Nationscape wave 50 survey")
+kable(age_table, caption="Age group proportion in Nationscape wave 50 survey") %>% 
+  kable_styling(latex_options = "hold_position")
+
 
 # Table of education level. 1 = received some college level education, 0 otherwise.
 count_edu <- survey1 %>%
@@ -89,7 +99,9 @@ count_edu <- survey1 %>%
     summarise(count = n()) %>%
     mutate(proportion = prop.table(count))
 edu_table <- data.frame(count_edu)
-kable(edu_table, caption="If the respondent's education level meets some college degree, No(0) vs Yes(1) in Nationscape wave 50 survey")
+kable(edu_table, caption="If the respondent's education level meets some college degree, No(0) vs Yes(1) in Nationscape wave 50 survey") %>% 
+  kable_styling(latex_options = "hold_position")
+
 
 #Table of Hispanic identity.
 count_hisp <- survey1 %>%
@@ -97,7 +109,9 @@ count_hisp <- survey1 %>%
     summarise(count = n()) %>%
     mutate(proportion = prop.table(count))
 hisp_table <- data.frame(count_hisp)
-kable(hisp_table, caption="If the respondent's ethnical/cultural identity is hispanic. No vs Yes in Nationscape wave 50 survey")
+kable(hisp_table, caption="If the respondent's ethnical/cultural identity is hispanic. No vs Yes in Nationscape wave 50 survey") %>% 
+  kable_styling(latex_options = "hold_position")
+
 
 #Table of Hispanic identity.
 count_gender <- survey1 %>%
@@ -105,11 +119,14 @@ count_gender <- survey1 %>%
     summarise(count = n()) %>%
     mutate(proportion = prop.table(count))
 gender_table <- data.frame(count_gender)
-kable(gender_table, caption="Gender proportion in Nationscape wave 50 survey")
+kable(gender_table, caption="Gender proportion in Nationscape wave 50 survey") %>% 
+  kable_styling(latex_options = "hold_position")
+
 ```
+
 Table 2-5 are frequency tables for variable age group, education level,  Hispanic identity, and gender respectively. In the Democracy Fund + UCLA Nationscape wave 50 survey, there are about two thirds respondents who have taken at least some post-secondary education, and respondents are mainly composed by people who are 25-44. Besides it, the majority of respondents have a non-hispanic identity. Female respondents compose 51.07% of the respondent population.
 
-Due to the length of the frequency table for the state variable, see Appendix 4 Table \@ref(tab:state-table-nationscape) for the frequency table of state distribution in Nationscape survey. Among these respondents,  7.4% people from the state of Texas(TX) compose the largest proportion while only 0.77% respondents come from the State of Wyoming(WY) compose the smallest proportion. 
+Due to the length of the frequency table for the state variable, see appendices 4 Table \@ref(tab:state-table-nationscape) for the frequency table of state distribution in Nationscape survey. Among these respondents,  7.4% people from the state of Texas(TX) compose the largest proportion while only 0.77% respondents come from the State of Wyoming(WY) compose the smallest proportion. 
 
 Table 6 is a frequency table showing respondents' 2020 candidate preference focusing on Biden and Trump only. Biden gains a slight advantage than Trump.
 
@@ -200,7 +217,7 @@ Post-stratification data is the 2018 American Community Survey(ACS) conducted by
 
 If the Census Bureau is unable to get a response by Internet, mail, or TQA, then one out of three non-respondent households may be selected for an in-person interview.  The proportion of non responding households selected for in-person interviews is higher in areas with lower predicted response rates. 
 
-The sampling unit for ACS is the household and all persons residing in the household in the US.  Sampling frame for ACS is a national Master address file (MAF: see details in Appendix 2). Census Bureau selects a systematic sample of addresses from the most current MAF on a monthly basis to use as the ACS sample. Target population for ACS is all U.S. residents. The sample size in the subset of 2018 ACS for the analysis is 11733. 
+The sampling unit for ACS is the household and all persons residing in the household in the US.  Sampling frame for ACS is a national Master address file (MAF: see details in appendices 2). Census Bureau selects a systematic sample of addresses from the most current MAF on a monthly basis to use as the ACS sample. Target population for ACS is all U.S. residents. The sample size in the subset of 2018 ACS for the analysis is 11733. 
 
 This systematic sampling approach eliminates the phenomenon of clustered selection and a low probability of contaminating data. However, the weakness of 2018 ACS data subjects to sampling error since the data is derived from a sample of the population. Nonresponse error occurs since some respondents provide data considered as invalid or inconsistent with other answers, or simply skip answers. Measurement error is another weakness if the vague/ambiguous questions misinterpreted by respondents. 
 
@@ -210,7 +227,7 @@ Table 7 shows the variables with descriptions used in the sub dataset based on 2
 
 Table 8-11 are frequency tables for variable age group, education level,  Hispanic identity and gender gender respectively. In the subset of 2018 ACS data, there is an even distribution trend of each group within gender, education and age variables. Respondents who have taken at least some post-secondary education account for about 50.7% and who have not compose 49.3%. Without the consideration of people who did not answer their age in the 2018 ACS questionnaire,  the population of each age group is almost evenly distributed.  The number of respondents in each state is almost the same. The ratio of male respondents to female respondents is basically the same. However, respondents with non-hispanic ethical/cultural identity account for 58% while the percentage for respondents with hispanic identity is only 42% .
 
-Due to the length of the frequency table for the state variable, see appendix 5 \@ref(tab:state-table-ACS) for the Frequency table of state distribution in a subset of 2018 ACS survey. We can observe the number of respondents in each state is almost the same with very similar proportions. 
+Due to the length of the frequency table for the state variable, see appendices 5 \@ref(tab:state-table-ACS) for the Frequency table of state distribution in a subset of 2018 ACS survey. We can observe the number of respondents in each state is almost the same with very similar proportions. 
 
 ```{r,warning=FALSE, message=FALSE, echo=FALSE}
 #Data frame for original cells_post.csv
@@ -288,6 +305,8 @@ race_plot
 ```
 The donut chart in figure 4 displays the race distribution in percentage among the respondents in the subset of 2018 ACS. White respondents take up the largest proportion, 24.2%, and API respondents account for the smallest proportion, 16.28%.
 
+\newpage
+
 # Model
 ## Multilevel Logistic Regression Model
 
@@ -301,6 +320,7 @@ survey_data <- survey_data %>% filter(!is.na(race))
 census_data <- read_csv("cells_post.csv")
 
 ```
+
 ```{r, include=FALSE}
 # Construct the vote intention variable so that it is binary
 survey_data$vote_Trump[survey_data$vote_2020=="Donald Trump"]<-1
@@ -353,14 +373,13 @@ ${\beta}_{13}$ coefficient represents the change in log odds for respondent whos
 
 $x$ represents each factor respectively. 
 
-
-The general aim of multilevel logistic regression is to estimate the odds that an event will occur (the yes/no outcome) while taking the dependency of data into account. Practically, it will allow you to estimate such odds as a function of lower level variables, higher level variables, and the way they are interrelated (cross-level interactions). Specifically, a multilevel logistic regression can be used when the outcome variable describes the presence/absence of an event or a behavior.[A] 
+The general aim of multilevel logistic regression is to estimate the odds that an event will occur (the yes/no outcome) while taking the dependency of data into account. Practically, it will allow you to estimate such odds as a function of lower level variables, higher level variables, and the way they are interrelated (cross-level interactions). Specifically, a multilevel logistic regression can be used when the outcome variable describes the presence/absence of an event or a behavior(Sommet 2017).
 
 We considered using a linear regression model, but finally we kept with logistic regression model. As in our situation, the response variable, whether vote for Trump, is a binary variable where 1 represent vote for Donald Trump and 0 represent vote for Joe Biden. Thus, it is more appropriate to use a logistic regression model in predicting the popular vote outcome for Trump of the 2020 American presidential election. Moreover, layers were added to our model, so we can get different intercepts for each state in order to make a preciser prediction.
 
 Whereas linear regression gives the predicted mean value of an outcome variable at a particular value of a predictor variable, logistic regression gives the conditional probability that an outcome variable equals one at a particular value of a predictor variable (e.g. the likelihood of vote for Trump for a male hispanic respondent aged at 35 who has received some college education with race native). 
 
-The expression on the left hand side of the equation is often called logit function, it is used to predict such a probability. In our model, it describes the relationship between a series of predictor variables(age, gender, education level, hispanics, and race) and the conditional probability that an outcome variable $Y_i$ equals one(vote for Trump). Also, a multilevel regression is used to smooth noisy estimates in the cells with too little data by using overall or nearby averages.[B]
+The expression on the left hand side of the equation is often called logit function, it is used to predict such a probability. In our model, it describes the relationship between a series of predictor variables(age, gender, education level, hispanics, and race) and the conditional probability that an outcome variable $Y_i$ equals one(vote for Trump). Also, a multilevel regression is used to smooth noisy estimates in the cells with too little data by using overall or nearby averages(Multilevel regression with poststratification 2020).
 
 We use `glmer()` from `lme4` package in `R` to fit the model to our data. We use `as.factor()` for age variable, because even though age is numerical in the original dataset, but it becomes categorical as we group them into age groups during the data cleaning process. For each categorical variable(age, gender, education level, hispanic, race) with $n$ levels, we need $n-1$ dummy variables to fully study its influence on our response variable(vote for Trump).
 
@@ -368,13 +387,14 @@ We use `glmer()` from `lme4` package in `R` to fit the model to our data. We use
 $$\hat{y}^{PS}=\frac{\sum N_j\hat{y_j}}{\sum N_j}$$
 where $\hat{y_j}$ is the estimate in each cell and $\sum N_j$ is the population size of $j^{th}$ cell based off demographics.
 
-In order to estimate the proportion of voters who will vote for Donald Trump, we performed a post-stratification analysis. We make predictions using our model above with census data from 2018 ACS, specifically estimate $y$ from each cell using our multilevel model, meaning use demographics to extrapolate how the entire population will vote. 
+In order to estimate the proportion of voters who will vote for Donald Trump, we performed a post-stratification analysis. We make predictions using our model above with census data from ACS, specifically estimate $y$ from each cell using our multilevel model, meaning use demographics to extrapolate how entire population will vote. 
 
 Response recorded basic demographics: age(7 categories), gender(2 categories), education level(2 categories), hispanics(2 categories), race(5 categories), thus partitioning the data into 280 cells. 
 
-We weight each proportion estimate by the respective population size and sum those values and divide by the entire population size. The post-stratification weights are a sophisticated weighting strategy that help to reduce sampling error and potential non-response bias.(ESS Methodology)
+We weight each proportion estimate by the respective population size and sum those values and divide by the entire population size. The post-stratification weights are a sophisticated weighting strategy that help to reduce sampling error and potential non-response bias(ESS Methodology. n.d.).
+\newpage
 
-# Result
+# Results
 ## Model Result
 ```{r,include=FALSE}
 #Multilevel Logistic Model for different states
@@ -382,20 +402,19 @@ model <- glmer(vote_Trump ~ as.factor(age) + gender + edu + hisp + race + (1|sta
 
 ```
 
-```{r, echo=FALSE, message=FALSE}
-#Statistical summary
-kable(summary(model)[["coefficients"]], digits=4, 
-      caption="Summary of Model Estimates")
-
-```
 Multilevel logistic regression model estimates by interpreting regression coefficients:
 $$\log \left(\frac{\hat{p}_{ij}}{1-\hat{p}_{ij}}\right)=-1.17+0.44 x_{ij}^{age25～34}+0.82 x_{ij}^{age35～44}+0.89 x_{ij}^{age45～54}$$
 $$+0.67 x_{ij}^{age55～64}+0.61 x_{ij}^{age65～74}+0.88 x_{ij}^{age75above}+0.43 x_{ij}^{gender}-0.37 x_{ij}^{edu}$$
 $$-0.43 x_{ij}^{hisp}-1.40 x_{ij}^{raceBlack}+0.95 x_{ij}^{raceNative}+0.32 x_{ij}^{raceOther}+0.82 x_{ij}^{raceWhite}$$
+```{r, echo=FALSE, message=FALSE}
+#Statistical summary
+kable(summary(model)[["coefficients"]], digits=4, 
+      caption="Summary of Model Estimates") %>% 
+  kable_styling(latex_options = "hold_position")
 
+```
 
 ## Post-stratification Calculation Result
-
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #post-stratification calculation
 #Making prediction using our model with census data, and we saving the results of those predictions by adding a new column to the census_data data set called 'estimate'
@@ -408,20 +427,12 @@ together <- census_data %>%
 mutate(alp_predict_prop = estimate*n) %>%
   summarise(alp_predict = sum(alp_predict_prop)/sum(n))
 kable(together, digits=4, 
-      caption="Vote Outcome Prediction for Trump of the 2020 American Presidential Election")
+      caption="Vote Outcome Prediction for Trump of the 2020 American Presidential Election")%>%
+  kable_styling(latex_options = "hold_position")
 ```
 
-The result table \@ref(tab:tablestate) of Vote Outcome Prediction for Trump of the 2020 American Presidential Election by State.
-```{r, tablestate, echo=FALSE, message=FALSE, warning=FALSE}
-#summarize by geography
-geography <- census_data %>%
-mutate(alp_predict_prop = estimate*n) %>%
-  group_by(state) %>%
-  summarise(alp_predict = sum(alp_predict_prop)/sum(n))
-kable(geography, digits=4, 
-      caption="Vote Outcome Prediction for Trump of the 2020 American Presidential Election by State")
-
-```
+See result table in appendices 6 Table \@ref(tab:tablestate) by state of Vote Outcome Prediction for Trump of the 2020 American Presidential Election by State.
+\newpage
 
 # Discussion
 ## Implication
@@ -444,7 +455,7 @@ Although Trump is an incumbent and may have easier access to be re-elect, our re
 
 3. As the world is suffering from the global pandemic COVID-19, it may more or less affect the result of the election. The data was collected before 2020 when the US had not been hit by the virus, yet the solution that President Trump gave to deal with the pandemic for sure shifted people’s opinion of him. And COVID has become a hot issue in the presidential debate. Moreover, it altered the method of how people are going to vote. Mail-in ballot is, for the first time, used in a presidential election however the postal services in the US cannot be fully trusted as there might be postman throwing away people’s ballot or it takes too long to be delivered on time before the election day and it also left the space for candidates to “cheat” as more people are afraid to catch the virus if they vote in person. For polling companies, the data should be collected and organized regularly, for example every two months, especially near the election day. Moreover, the weight of those voters who vote in person should increase as it is relatively more certain that their votes are counted in the election.  
 
-
+\newpage
 # References
 David Robinson, Alex Hayes and Simon Couch (2020). broom: Convert Statistical
   Objects into Tidy Tibbles. R package version 0.7.0.
@@ -464,7 +475,10 @@ Hadley Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New
 Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2020). dplyr:
   A Grammar of Data Manipulation. R package version 1.0.2.
   https://CRAN.R-project.org/package=dplyr
-
+  
+Hao Zhu (2020). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. http://haozhu233.github.io/kableExtra/,
+  https://github.com/haozhu233/kableExtra.
+  
 Multilevel regression with poststratification. (2020, October 14). Retrieved from https://en.wikipedia.org/wiki/Multilevel_regression_with_poststratification
 
  R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
@@ -483,6 +497,7 @@ Yihui Xie (2020). knitr: A General-Purpose Package for Dynamic Report
 © 2000–2017 Sandbox Networks, Inc., publishing as Fact Monster.
 23 Oct. 2020 <https://www.factmonster.com/us/postal-information/state-abbreviations-and-state-postal-codes/>.
   
+\newpage
 
 # Appendices 
 
@@ -492,7 +507,7 @@ Yihui Xie (2020). knitr: A General-Purpose Package for Dynamic Report
 
 3. Github link which contains all the code, dataset(except for original ACS 2018 and Nationscape survey, method to download is attached in readme.md), and report for the project: https://github.com/rubytianxiaoma/2020-election-forecast 
 
-4. See Table \@ref(tab:state-table-nationscape) for the frequency table of state distribution in Nationscape survey.
+4. See Table \@ref(tab:state-table-nationscape) for the frequency table of state distribution in Nationscape survey. Table shows on the next page due to length limitation.
 
 ```{r state-table-nationscape, echo=FALSE, message=FALSE, warning=FALSE}
 #Table of State Proportion.
@@ -501,10 +516,11 @@ count_state <- survey1 %>%
     summarise(count = n()) %>%
     mutate(proportion = prop.table(count))
 state_table <- data.frame(count_state)
-kable(state_table, caption="State proportion in Nationscape wave 50 survey")
+kable(state_table, caption="State proportion in Nationscape wave 50 survey")%>%
+  kable_styling(latex_options = "hold_position")
 ```
 
-5. See Table \@ref(tab:state-table-ACS) for the Frequency table of state distribution in subset of 2018 ACS survey
+5. See Table \@ref(tab:state-table-ACS) for the Frequency table of state distribution in subset of 2018 ACS survey. Table \@ref(tab:state-table-ACS) locates below Table \@ref(tab:state-table-nationscape)
 
 ```{r state-table-ACS, echo=FALSE, message=FALSE, warning=FALSE}
 #Table of State Proportion in 2018 ACS.
@@ -513,6 +529,20 @@ count_state <- post1 %>%
     summarise(count = n()) %>%
     mutate(proportion = prop.table(count))
 state_table <- data.frame(count_state)
-kable(state_table, caption="State proportion in 2018 ACS")
+kable(state_table, caption="State proportion in 2018 ACS")%>%
+  kable_styling(latex_options = "hold_position")
+
+```
+6. See result Table \@ref(tab:tablestate) by state of Vote Outcome Prediction for Trump of the 2020 American Presidential Election by State on the last page of this report.
+
+```{r, tablestate, echo=FALSE, message=FALSE, warning=FALSE}
+#summarize by geography
+geography <- census_data %>%
+mutate(alp_predict_prop = estimate*n) %>%
+  group_by(state) %>%
+  summarise(alp_predict = sum(alp_predict_prop)/sum(n))
+kable(geography, digits=4, 
+      caption="Vote Outcome Prediction for Trump of the 2020 American Presidential Election by State")%>%
+  kable_styling(latex_options = "hold_position")
 
 ```
