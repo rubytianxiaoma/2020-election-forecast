@@ -489,6 +489,7 @@ Hao Zhu (2020). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax
 Multilevel regression with poststratification. (2020, October 14). Retrieved from https://en.wikipedia.org/wiki/Multilevel_regression_with_poststratification
 
 R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+
 Ryan Hurl.(2016). Understanding America, Parties and Elections, pp101-121
 
 Steven Ruggles, Sarah Flood, Ronald Goeken, Josiah Grover, Erin Meyer, Jose Pacas and Matthew Sobek. IPUMS USA: Version 10.0 [dataset]. Minneapolis, MN: IPUMS, 2020.
@@ -497,6 +498,9 @@ https://doi.org/10.18128/D010.V10.0
 Sommet, N., & Morselli, D. (2017). Keep Calm and Learn Multilevel Logistic Modeling: A Simplified Three-Step Procedure Using Stata, R, Mplus, and SPSS. International Review of Social Psychology, 30(1), 203–218. DOI: http://doi.org/10.5334/irsp.90
 
 Tausanovitch, Chris and Lynn Vavreck. 2020. Democracy Fund + UCLA Nationscape, October 10-17, 2019 (version 20200814). Retrieved from https://www.voterstudygroup.org/downloads?key=84a68f37-86ac-4871-b68a-a57b4d9e31d2.
+
+Yihui Xie (2020). bookdown: Authoring Books and Technical Documents with R Markdown. R package version 0.21.
+ 
 Yihui Xie (2020). knitr: A General-Purpose Package for Dynamic Report
   Generation in R. R package version 1.30, https://yihui.org/knitr/ 
 
