@@ -7,10 +7,15 @@ output:
     latex_engine: xelatex
     citation_package: natbib
   pdf_document: default
+  header-includes:
+    - \pagenumbering{gobble}
 abstract: |
  Thanks to the electoral college system, Republican Donald J. Trump won the presidential election in the year of 2016 and defeated Democrat candidate Hillary Clinton even though Hillary won the popular vote by a slim margin. However, as the difference between the popular approval rate of two candidates Joe Biden and Donald Trump increases and the constituencies are getting polarized, it is hard to tell whether or not Donald Trump will be re-elected when he has a relatively lower approval rate. Hence in our research, we used the multilevel regression with post stratification and found out that Trump will have a winning rate of 49.87% so that Biden will win the election. Such findings forecast the result of the 2020 US presidential election and furthermore tell the trending ideology of the general American people is going more left or progressive rather than conservative so that it will indirectly show the possible policies introduced by the US government in the near future.
 
  **Keywords:** forecasting; US 2020 election; Trump; Biden; Multilevel Regression with post-stratification
+---
+\pagenumbering{arabic}
+\renewcommand\contentsname{Contents}
 ---
 
 ```{r setup, include=FALSE,echo=FALSE}
@@ -31,7 +36,7 @@ library(kableExtra)
 survey <- read_csv("survey.csv")
 post <- read_csv("cells_post.csv")
 ```
-
+\pagenumbering{arabic}
 \newpage
 
 # Introduction
@@ -466,12 +471,14 @@ Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker (2015). Fitting
   67(1), 1-48. doi:10.18637/jss.v067.i01.
 
 ESS Methodology. (n.d.). Retrieved from https://www.europeansocialsurvey.org/methodology/ess_methodology/data_processing_archiving/weighting.html#:~:text=Post-stratification weights are a,gender, education, and region.
- Hadley Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686,  https://doi.org/10.21105/joss.01686
+
+Hadley Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686,  https://doi.org/10.21105/joss.01686
 
 Hadley Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New
   York, 2016, https://ggplot2.tidyverse.org 
 
- Hadley Wickham, Jim Hester and Romain Francois (2018). readr: Read Rectangular Text Data. R package version 1.3.1. https://CRAN.R-project.org/package=readr
+Hadley Wickham, Jim Hester and Romain Francois (2018). readr: Read Rectangular Text Data. R package version 1.3.1. https://CRAN.R-project.org/package=readr
+
 Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2020). dplyr:
   A Grammar of Data Manipulation. R package version 1.0.2.
   https://CRAN.R-project.org/package=dplyr
@@ -481,7 +488,7 @@ Hao Zhu (2020). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax
   
 Multilevel regression with poststratification. (2020, October 14). Retrieved from https://en.wikipedia.org/wiki/Multilevel_regression_with_poststratification
 
- R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
 Ryan Hurl.(2016). Understanding America, Parties and Elections, pp101-121
 
 Steven Ruggles, Sarah Flood, Ronald Goeken, Josiah Grover, Erin Meyer, Jose Pacas and Matthew Sobek. IPUMS USA: Version 10.0 [dataset]. Minneapolis, MN: IPUMS, 2020.
